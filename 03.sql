@@ -1,0 +1,3 @@
+--숫자함수
+--round - 반올림
+SELECT ROUND(45.923,2 ), ROUND(45.923, 0), ROUND(45.923, -1) FROM DUAL;
