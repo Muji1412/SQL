@@ -69,4 +69,96 @@ when JOB_ID = 'AD_VP' THEN SALARY * 1.3
 else SALARY
 END
 from EMPLOYEES;
+
+
+-- null이 아닌 첫번째 인자값을 반환하는 함수
+SELECT coalesce('A', 'B', 'C') FROM DUAL;
+SELECT coalesce(null, 'b', 'C') From dual;
+SELECT coalesce(null, null, 'C') From dual;
+SELECT coalesce(null, null, null) From dual;
+
+select coalesce(COMMISSION_PCT, 0), nvl(COMMISSION_PCT,0) from EMPLOYEES;
+
+
+-- 문제 1.
+-- 1) 오늘의 환율이 1302.69원 입니다 SALARY컬럼을 한국돈으로 변경해서 소수점 2자리수까지 출력 하세요.
+-- 2) '20250207' 문자를 '2025년 02월 07일' 로 변환해서 출력하세요.
+SELECT '원화기준'||TO_CHAR(SALARY* 1302.693242, 999999999.99) FROM EMPLOYEES;
+select TO_CHAR('20250207', 'YYYY"년 MM"월" DD"일"') FROM dual;
+-- 문제 2.
+-- 현재일자를 기준으로 EMPLOYEE테이블의 입사일자(hire_date)를 참조해서 근속년수가 10년 이상인
+-- 사원을 다음과 같은 형태의 결과를 출력하도록 쿼리를 작성해 보세요. 
+-- 조건 1) 근속년수가 높은 사원 순서대로 결과가 나오도록 합니다.
+select first_name, HIRE_DATE FROM EMPLOYEES WHERE TO_NUMBER(to_char(sysdate-HIRE_DATE))/12 >=10;
+select TO_NUMBER(to_char(sysdate,'YYYYMMDD')) from dual;
+
+
 SELECT FIRST_NAME
+,JOB_ID
+,SALARY
+,
+CASE JOB_ID 
+when 'IT_PROG' THEN salary * 1.1
+when 'FI_MGR' THEN SALARY * 1.2
+when 'AD_VP' THEN SALARY * 1.3
+else salary
+end
+FROM EMPLOYEES;
+
+
+-- 문제 3.
+-- EMPLOYEE 테이블의 manager_id컬럼을 확인하여 first_name, manager_id, 직급을 출력합니다.
+-- 100이라면 ‘부장’ 
+-- 120이라면 ‘과장’
+-- 121이라면 ‘대리’
+-- 122라면 ‘주임’
+-- 나머지는 ‘사원’ 으로 출력합니다.
+-- 조건 1) 부서가 50인 사람들을 대상으로만 조회합니다
+-- 조건 2) DECODE구문으로 표현해보세요.
+-- 조건 3) CASE구문으로 표현해보세요.
+
+select first_name, 
+    CASE
+        when MANAGER_ID ='100' then '부장'
+        when MANAGER_ID ='120' then '과장'
+        when MANAGER_ID ='121' then '대리'
+        when MANAGER_ID ='122' then '주임'
+        ELSE '대리'
+    END
+from employees WHERE DEPARTMENT_ID = 50;
+
+SELECT first_name,
+    decode(
+        MANAGER_ID,
+        '100', '부장',
+        '120', '과장',
+        '121', '대리',
+        '122', '주임',
+        '사원'
+    ) from employees where DEPARTMENT_ID = 50;
+        
+SELECT sysdate, to_char(sysdate, 'YYYY"년" MM"월" DD"일"') FROM dual; -- 데이트 포맷형식 아닌값은 ""로 묶음
+
+
+-- 문제 4. 
+-- EMPLOYEES 테이블의 이름, 입사일, 급여, 진급대상, 급여상태 를 출력합니다.
+-- 조건1) HIRE_DATE를 XXXX년XX월XX일 형식으로 출력하세요. 
+-- 조건2) 급여는 커미션값이 퍼센트로 더해진 값을 출력하고, 1300을 곱한 원화로 바꿔서 출력하세요.
+-- 조건3) 진급대상은 5년 마다 이루어 집니다. 근속년수가 5의 배수라면 진급대상으로 출력합니다.
+-- 조건4) 부서가 NULL이 아닌 데이터를 대상으로 출력합니다.
+-- 조건5) 급여상태는 10000이상이면 '상' 10000~5000이라면 '중', 5000이하라면 '하' 로 출력해주세요.
+SELECT FIRST_NAME || ' ' ||LAST_NAME as 이름, 
+to_char(HIRE_DATE, 'YYYY"년"MM"월"DD"일"') AS 입사일, 
+-- 이거 잘못했음, 
+-- nvl(salary,SALARY*COMMISSION_PCT)*1300||'원' as 급여, 
+(SALARY + nvl(SALARY + SALARY*COMMISSION_PCT, 0)) * 1300 as 급여,
+CASE
+    WHEN MOD(trunc((sysdate-HIRE_DATE)/365), 5) = 0 then '진급대상'
+    else '안됨'
+END as 진급대상,
+CASE
+    when SALARY>10000 then '상'
+    when SALARY<5000 then '하'
+    else '중'
+END as 급여상태
+     from EMPLOYEES WHERE DEPARTMENT_ID is not NULL;

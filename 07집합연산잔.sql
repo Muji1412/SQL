@@ -15,6 +15,8 @@ UNION
 select first_name, hire_date from employees where department_id = 20;
 
 
+
+
 select first_name, hire_date from employees where hire_date LIKE '04%'
 UNION ALL
 select first_name, hire_date from employees where department_id = 20;
@@ -29,3 +31,10 @@ select first_name, hire_date from employees where hire_date LIKE '04%'
 MINUS
 select first_name, hire_date from employees where department_id = 20;
 
+SELECT first_name,
+salary,
+RANK() OVER(ORDER by SALARY DESC) as 중복등수,
+Dense_rank() OVer(ORDER by SALARY desc) as 중복없는등수,
+ROW_NUMBER() OVER(ORDER by SALARY desc) as 일련번호,
+ROWNUM--
+FROM employees;
