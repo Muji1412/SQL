@@ -169,4 +169,70 @@ SELECT *
 FROM EMPLOYEES E
 Cross JOIN DEPARTMENTS D;
 
+-- 문제 7.
+-- EMPLOYEES 테이블과 DEPARTMENTS 테이블의 부서번호를 조인하고 SA_MAN 사원만의 사원번호, 이름, 
+-- 급여, 부서명, 근무지를 출력하세요. (Alias를 사용)
+
+SELECT * FROM employees;
+SELECT * FROM DEPARTMENTS;
+
+SELECT E.JOB_ID as 사원번호, E.FIRST_NAME||E.LAST_NAME as 이름, E.SALARY as 급여, D.LOCATION_ID as 근무지, D.DEPARTMENT_NAME as 부서명
+FROM EMPLOYEES E
+INNER JOIN DEPARTMENTS D
+ON E.DEPARTMENT_ID = D.DEPARTMENT_ID
+WHERE E.JOB_ID = 'SA_MAN';
+
+
+-- 문제 8.
+-- employees, jobs 테이블을 조인 지정하고 job_title이 'Stock Manager', 'Stock Clerk'인 직원 정보만
+-- 출력하세요.
+
+SELECT * FROM employees;
+SELECT * FROM JOBS;
+
+-- 잡아이디
+
+SELECT *
+FROM EMPLOYEES E
+INNER JOIN JOBS J
+ON E.JOb_ID = J.JOB_ID
+WHERE j.JOB_TITLE = 'Stock Manager' or j.JOB_TITLE ='Stock Clerk';
+
+
+-- 문제 9.
+-- departments 테이블에서 직원이 없는 부서를 찾아 출력하세요. LEFT OUTER JOIN 사용
+
+SELECT D.DEPARTMENT_NAME as 부서명, e.E.EMPLOYEE_ID
+FROM DEPARTMENTS D 
+LEFT OUTER JOIN EMPLOYEES E
+ON E.DEPARTMENT_ID = D.DEPARTMENT_ID
+WHERE E.EMPLOYEE_ID is null;
+
+-- 문제 10. 
+-- join을 이용해서 사원의 이름과 그 사원의 매니저 이름을 출력하세요
+-- 힌트) EMPLOYEES 테이블과 EMPLOYEES 테이블을 조인하세요.
+
+SELECT * FROM employees;
+
+-- 매니저아이디 있음
+
+SELECT E.FIRST_NAME||E.LAST_NAME as 이름, EM.FIRST_NAME||EM.LAST_NAME as 매니저이름
+FROM EMPLOYEES E
+INNER JOIN EMPLOYEES EM
+ON E.EMPLOYEE_ID = EM.MANAGER_ID;
+
+-- 문제 11. 
+-- EMPLOYEES 테이블에서 left join하여 관리자(매니저)와, 매니저의 이름, 매니저의 급여 까지 출력하세요
+-- 조건) 매니저 아이디가 없는 사람은 배제하고 급여는 역순으로 출력하세요
+
+SELECT E.FIRST_NAME||E.LAST_NAME as 이름, m.FIRST_NAME||m.LAST_NAME as 매니저이름, m.SALARY as 매니저_급여
+FROM EMPLOYEES E
+left JOIN EMPLOYEES m
+ON E.MANAGER_ID = M.EMPLOYEE_ID
+WHERE E.MANAGER_ID is not null
+ORDER BY M.SALARY DESC;
+
+-- 보너스 문제 12.
+-- 윌리엄스미스(William smith)의 직급도(상급자)를 구하세요.
+
 
